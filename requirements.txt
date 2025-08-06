@@ -1,0 +1,16 @@
+torch
+transformers
+tokenizers
+huggingface_hub
+accelerate
+datasets
+bitsandbytes
+peft
+jsonlines
+sentencepiece
+trl
+wandb
+rouge-score
+sacrebleu
+evaluate
+bert_score
