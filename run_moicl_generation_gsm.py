@@ -241,6 +241,8 @@ def main():
 
     test_accuracy = 100. * correct / len(dataset['test'])
     print(test_accuracy)
+
+    os.makedirs(os.path.dirname(model_path), exist_ok=True)
     with open(model_path + "pred_answer_list.pkl", 'wb') as f:
         pickle.dump(pred_answer_list, f)
 

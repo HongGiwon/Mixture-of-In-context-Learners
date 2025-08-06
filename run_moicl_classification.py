@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import json
 import argparse
+import os
 from torch.utils.data import DataLoader
 from utils.utils import load_t5_model, get_ll2_model, classification_data_init, dataset_split
 from utils.custom_collators import *
@@ -157,6 +158,8 @@ if __name__ == "__main__":
     test_accuracy = 100. * correct / len(test_dataset)
     print(f'\nAccuracy {test_accuracy:.2f}%')
     output_log['test'] = {"Test Acc": test_accuracy, "Weight": best_weights}
+
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     with open(output_path, 'w') as f:
         json.dump(output_log, f, indent=4)
