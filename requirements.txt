@@ -8,7 +8,7 @@ bitsandbytes
 peft
 jsonlines
 sentencepiece
-trl
+trl==0.19.1
 wandb
 rouge-score
 sacrebleu
