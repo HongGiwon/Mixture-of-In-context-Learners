@@ -202,7 +202,7 @@ def main():
         custom_model.classification_head.load_state_dict(torch.load(model_path + "classification_head.pth"))
         custom_model.hypernet.load_state_dict(torch.load(model_path + "hypernet.pth"))
     else: ## scalar weights
-        custom_model.weights = torch.load(model_path + 'weights.pth')
+        custom_model.weights = torch.load(model_path + 'weights.pth', weights_only=False)
 
     stop_tokens = ["Question:", "</s>","<|im_end|>","\n\n"]
     
