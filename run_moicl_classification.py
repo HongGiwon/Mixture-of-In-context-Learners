@@ -157,7 +157,7 @@ if __name__ == "__main__":
 
     test_accuracy = 100. * correct / len(test_dataset)
     print(f'\nAccuracy {test_accuracy:.2f}%')
-    output_log['test'] = {"Test Acc": test_accuracy, "Weight": best_weights}
+    output_log['test'] = {"Test Acc": test_accuracy, "Weight": best_weights.detach().cpu().numpy().tolist()}
 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
