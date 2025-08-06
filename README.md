@@ -20,14 +20,14 @@ The repository contains two main entry points:
 
 | Script | Task Type      | Description                                                                                                            |
 | ------ | -------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| \`\`   | Classification | Runs MOICL on text classification datasets such as SST-2, RTE, hate/offensive speech detection, FEVER, PAWS, and QNLI. |
-| \`\`   | Generation     | Runs MOICL on a math reasoning task (GSM8K).                                                                      |
+| run_moicl_classification.py   | Classification | Runs MOICL on text classification datasets such as SST-2, RTE, hate/offensive speech detection, FEVER, PAWS, and QNLI. |
+| run_moicl_generation_gsm.py   | Generation     | Runs MOICL on a math reasoning task (GSM8K).                                                                      |
 
 ---
 
 ## 3. Input Parameters
 
-### \*\*Classification: \*\*\`\`
+### Classification:
 
 | Argument             | Type    | Default                                 | Description                                                                         |
 | -------------------- | ------- | --------------------------------------- | ----------------------------------------------------------------------------------- |
@@ -46,7 +46,7 @@ The repository contains two main entry points:
 
 ---
 
-### \*\*Generation: \*\*\`\`
+### Generation:
 
 | Argument             | Type    | Default                        | Description                             |
 | -------------------- | ------- | ------------------------------ | --------------------------------------- |
