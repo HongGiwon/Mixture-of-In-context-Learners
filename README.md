@@ -35,7 +35,7 @@ The repository contains two main entry points:
 | `--n_samples`        | `int`   | `1`                                     | Number of demonstrations per set.                                                   |
 | `--n_sets`           | `int`   | `30`                                    | Number of demonstration sets.                                                       |
 | `--seed`             | `int`   | `42`                                    | Random seed.                                                                        |
-| `--dataset`          | `str`   | `None`                                  | Dataset name (`sst`, `rte`, `hate`, `offensive`, `fever`, `paws`, `qnli`).          |
+| `--dataset`          | `str`   | `None`                                  | Dataset name (`offensive`,`hate`,`sst`, `rte`, `fever`, `paws`, `qnli`).          |
 | `--n_epoch`          | `int`   | `5`                                     | Training epochs.                                                                    |
 | `--lr`               | `float` | `0.1`                                   | Learning rate for hypernet/scalar weights.                                          |
 | `--accum_step`       | `int`   | `12`                                    | Gradient accumulation steps.                                                        |
@@ -70,10 +70,10 @@ The scripts expect datasets to be available via [Hugging Face Datasets](https://
 
 **Supported classification datasets:**
 
+- `offensive` – Offensive language classification
+- `hate` – Hate speech detection
 - `sst` – SST-2 sentiment classification
 - `rte` – Recognizing Textual Entailment
-- `hate` – Hate speech detection
-- `offensive` – Offensive language classification
 - `fever` – Fact verification
 - `paws` – Paraphrase Adversaries from Word Scrambling
 - `qnli` – Question-answer entailment
@@ -162,10 +162,6 @@ If you use this repository in your research, please cite:
       Ponti, Edoardo  and
       Malkin, Nikolay  and
       Minervini, Pasquale",
-    editor = "Che, Wanxiang  and
-      Nabende, Joyce  and
-      Shutova, Ekaterina  and
-      Pilehvar, Mohammad Taher",
     booktitle = "Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
     month = jul,
     year = "2025",
