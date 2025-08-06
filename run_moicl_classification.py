@@ -1,10 +1,9 @@
 import torch
 import torch.nn as nn
-from datasets import load_dataset
 import json
 import argparse
 from torch.utils.data import DataLoader
-from utils.utils import load_t5_model, get_ll2_model
+from utils.utils import load_t5_model, get_ll2_model, classification_data_init, dataset_split
 from utils.custom_collators import *
 from utils.train_eval import *
 
@@ -27,13 +26,6 @@ def parse_args():
 
     args = parser.parse_args()
     return args
-
-def label_to_number(example):
-    if example['label'] == "refuted":
-        example['label'] = 0
-    elif example['label'] == "supported":
-        example['label'] = 1
-    return example
 
 if __name__ == "__main__":
     args = parse_args()
@@ -62,65 +54,14 @@ if __name__ == "__main__":
     for param in model.parameters():
         param.requires_grad = False
 
-    if dataset_name == "offensive":
-        label_mapping = {0:"neutral", 1:"offensive"}
-        dataset = load_dataset("tweet_eval", "offensive")
-        output_path = "outputs/tweet_offensive_nsample_" +str(n_samples) + "_nset_" +str(args.n_sets) + "_" + model_name.split("/")[-1] + "_nepoch_" +str(n_epoch)+ "_seed_" +str(seed) + "_lr_" + str(args.lr) + ".json"
-    elif dataset_name == "hate":
-        label_mapping = {0:"neutral", 1:"hate"}
-        dataset = load_dataset("tweet_eval", "hate")
-        output_path = "outputs/tweet_hate_nsample_" +str(n_samples) + "_nset_" +str(args.n_sets) + "_" + model_name.split("/")[-1] + "_nepoch_" +str(n_epoch)+ "_seed_" +str(seed) + "_lr_" + str(args.lr) + ".json"
-    elif dataset_name == "sst":
-        label_mapping = {0:"negative", 1:"positive"}
-        dataset = load_dataset("stanfordnlp/sst2")
-        output_path = "outputs/sst2_nsample_" +str(n_samples) + "_nset_" +str(args.n_sets) + "_" + model_name.split("/")[-1] + "_nepoch_" +str(n_epoch)+ "_seed_" +str(seed) + "_lr_" + str(args.lr) + ".json"
-    elif dataset_name == "rte":
-        label_mapping = {0:"true", 1:"false"} 
-        dataset = load_dataset("nyu-mll/glue", "rte")
-        output_path = "outputs/rte_nsample_" +str(n_samples) + "_nset_" +str(args.n_sets) + "_" + model_name.split("/")[-1] + "_nepoch_" +str(n_epoch)+ "_seed_" +str(seed) + "_lr_" + str(args.lr) + ".json"
-    elif dataset_name == "fever":
-        label_mapping = {0:"refuted", 1:"supported"}
-        dataset = load_dataset("pminervini/hl-fever", "v1.0")
-        dataset = dataset.map(label_to_number)
-        output_path = "outputs/fever_nsample_" +str(n_samples) + "_nset_" +str(args.n_sets) + "_" + model_name.split("/")[-1] + "_nepoch_" +str(n_epoch)+ "_seed_" +str(seed) + "_lr_" + str(args.lr) + ".json"
-    elif dataset_name == "paws":
-        label_mapping = {0:"no", 1:"yes"}
-        dataset = load_dataset("google-research-datasets/paws", "labeled_final")
-        output_path = "outputs/paws_nsample_" +str(n_samples) + "_nset_" +str(args.n_sets) + "_" + model_name.split("/")[-1] + "_nepoch_" +str(n_epoch)+ "_seed_" +str(seed) + "_lr_" + str(args.lr) + ".json"
-    elif dataset_name == "qnli":
-        label_mapping = {0:"yes", 1:"no"}
-        dataset = load_dataset("nyu-mll/glue", "qnli")
-        output_path = "outputs/qnli_nsample_" +str(n_samples) + "_nset_" +str(args.n_sets) + "_" + model_name.split("/")[-1] + "_nepoch_" +str(n_epoch)+ "_seed_" +str(seed) + "_lr_" + str(args.lr) + ".json"
-    else:
-        raise NotImplementedError("The dataset needs to be implemented")
-
-    model_output_path = output_path.replace(".json","") + "_hypernet.pth"
+    label_mapping, dataset, output_path = classification_data_init(dataset_name, args)
+    train_dataset, dev_dataset, test_dataset = dataset_split(dataset, args)
+    train_samples = [train_dataset[i] for i in range(args.n_samples*args.n_sets)]
 
     label_mapping_id = {}
     for label in label_mapping:
         label_mapping_id[label] = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(label_mapping[label]))[0]
     label_model_token_ids = list(label_mapping_id.values())
-    
-    train_dataset = dataset['train'].shuffle(seed=seed)
-    train_samples = [train_dataset[i] for i in range(n_samples*args.n_sets)]
-    remaining_indices = range(n_samples*args.n_sets, len(dataset['train']))
-    train_dataset = train_dataset.select(remaining_indices)
-
-    if dataset_name == "qnli" or dataset_name == "drop" or dataset_name == "drop_inst":
-        train_dataset, dev_dataset = train_dataset.train_test_split(test_size=5000, seed=seed, shuffle=False).values()
-        test_dataset = dataset['validation']
-    elif dataset_name == "fever":
-        train_dataset, dev_dataset = train_dataset.train_test_split(test_size=5000, seed=seed, shuffle=False).values()
-        test_dataset = dataset['dev']
-    elif dataset_name == "sst":
-        train_dataset, dev_dataset = train_dataset.train_test_split(test_size=1000, seed=seed, shuffle=False).values()
-        test_dataset = dataset['validation']
-    elif dataset_name == "rte":
-        train_dataset, dev_dataset = train_dataset.train_test_split(test_size=300, seed=seed, shuffle=False).values()
-        test_dataset = dataset['validation']
-    else:
-        dev_dataset = dataset['validation']
-        test_dataset = dataset['test']
 
     if args.train_instance > 0:
         train_dataset = train_dataset.select(range(0, args.train_instance))
@@ -148,6 +89,7 @@ if __name__ == "__main__":
     output_log = {'train':{},'test':{}}
 
     if not args.hyper_model_name == "":
+        model_output_path = output_path.replace(".json","") + "_hypernet.pth"
         train_loader = DataLoader(train_dataset, batch_size=n_samples*args.n_sets+1, shuffle=True, collate_fn=collator, drop_last=True)
         train_tweet_offensive_hypernet_nofix(
             train_dataset=train_dataset, 
