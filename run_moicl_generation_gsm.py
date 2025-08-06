@@ -29,7 +29,7 @@ def parse_args():
     parser.add_argument("--seed", type=int, default=31, help="seed")
     parser.add_argument("--n_epoch", type=int, default=1, help="n_epoch")
     parser.add_argument("--lr", type=float, default=0.0001, help="lr for hypernet")
-    parser.add_argument("--n_sets", type=int, default=3, help="n_sets")
+    parser.add_argument("--n_sets", type=int, default=6, help="n_sets")
     parser.add_argument("--accum_step", type=int, default=12, help="accum steps")
     parser.add_argument("--scalar_weights", default=False, action='store_true')
     parser.add_argument("--train_instance", type=int, default=-1, help="number of train instances to use")
