@@ -160,7 +160,7 @@ If you use this repository in your research, please cite:
     author = "Hong, Giwon  and
       Van Krieken, Emile  and
       Ponti, Edoardo  and
-      Malkin, Nikolay  and
+      Whitammer, Esmeralda S.  and
       Minervini, Pasquale",
     booktitle = "Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
     month = jul,
